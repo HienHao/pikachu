@@ -1,0 +1,16 @@
+.main__play > div > div:first-child img {
+  border-left: 1px solid greenyellow;
+}
+
+img {
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-right: 1px solid greenyellow;
+  border-top: 1px solid greenyellow;
+  border-bottom: 1px solid greenyellow;
+}
+div img:hover {
+  opacity: 0.6;
+  background-color: orangered;
+}
