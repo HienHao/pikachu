@@ -1,82 +1,58 @@
 import React from 'react';
+import * as ActionsPikachu from '../../../redux/actions/PikachuAction';
+import { connect } from 'react-redux';
+
 import "./play.scss";
 
 class Play extends React.Component {
+    componentDidMount() {
+        const {getMapPikachu} = this.props;
+        getMapPikachu();
+    }
+
     render() {
-        const src = ["../assets/images/pikachu-1.png",
-            "../assets/images/pikachu-2.png",
-            "../assets/images/pikachu-3.png",
-            "../assets/images/pikachu-4.png",
-            "../assets/images/pikachu-5.png",
-            "../assets/images/pikachu-6.png",
-            "../assets/images/pikachu-7.png",
-            "../assets/images/pikachu-8.png",
-            "../assets/images/pikachu-9.png",
-            "../assets/images/pikachu-10.png",
-            "../assets/images/pikachu-5.png",
-            "../assets/images/pikachu-6.png",
-            "../assets/images/pikachu-7.png",
-            "../assets/images/pikachu-8.png",
-        ];
-        const element = (src) => {
+        const {playProps} = this.props;
+        function elementImage(src) {
             return (
                 <div>
                     <img src={src}/>
                 </div>
             );
-        };
+        }
+
+        function componentElement(elements) {
+            debugger;
+            return (
+                <div style={{display: "flex"}} className="main__play__items">
+                    {elements.map((element) => elementImage(element.image))}
+                </div>
+            );
+        }
+
+        function displayElements(elements) {
+            return elements.map(element => componentElement(element))
+        }
+
         return (
             <div className="main">
                 <section id="broad" className="main__play">
-                    <div style={{display: "flex"}} className="main__play__items">
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
-                    <div style={{display: "flex"}}>
-                        {
-                            src.map(s => element(s))
-                        }
-                    </div>
+                    {displayElements(playProps)}
                 </section>
             </div>
         );
     }
 }
 
-export default Play;
+function mapStateToProps(state) {
+    return {
+        playProps: state.PikachuReducer,
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getMapPikachu: () => dispatch(ActionsPikachu.getMapPikachu())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Play);

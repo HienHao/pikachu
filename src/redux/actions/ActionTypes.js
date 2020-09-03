@@ -1,0 +1,1 @@
+export const GET_MAP_PIKACHU = "GET_MAP_PIKACHU";

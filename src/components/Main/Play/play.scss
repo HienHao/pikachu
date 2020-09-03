@@ -3,13 +3,15 @@
 }
 
 img {
-  width: 40px;
-  height: 40px;
+  width: 70px;
+  height: 70px;
   padding: 10px;
-  border-right: 1px solid greenyellow;
-  border-top: 1px solid greenyellow;
-  border-bottom: 1px solid greenyellow;
 }
+.main__play > div > div img {
+  border-top: 1px solid greenyellow;
+  border-right: 1px solid greenyellow;
+}
+
 div img:hover {
   opacity: 0.6;
   background-color: orangered;
