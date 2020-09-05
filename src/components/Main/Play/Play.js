@@ -11,26 +11,29 @@ class Play extends React.Component {
     }
 
     render() {
-        const {playProps} = this.props;
-        function elementImage(src) {
+        const {playProps, clickElement} = this.props;
+        function elementImage(element, indexRow) {
             return (
-                <div>
-                    <img src={src}/>
+                <div className="box" style={{width: '70px', height: '70px', position: 'relative'}}>
+                    <div className="hoverBox" style={{width: '70px', height: '70px', position: 'relative'}} onClick={() => clickElement(element, indexRow)}/>
+                    {
+                        element.statusEnable === false && <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} />
+                    }
                 </div>
-            );
+            )
+
         }
 
-        function componentElement(elements) {
-            debugger;
+        function componentElement(elements, indexRow) {
             return (
                 <div style={{display: "flex"}} className="main__play__items">
-                    {elements.map((element) => elementImage(element.image))}
+                    {elements.map((element) => elementImage(element, indexRow))}
                 </div>
             );
         }
 
         function displayElements(elements) {
-            return elements.map(element => componentElement(element))
+            return elements.map((element, index) => componentElement(element, index))
         }
 
         return (
@@ -51,7 +54,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getMapPikachu: () => dispatch(ActionsPikachu.getMapPikachu())
+        getMapPikachu: () => dispatch(ActionsPikachu.getMapPikachu()),
+        clickElement: (element, indexRow) => dispatch(ActionsPikachu.clickElement(element, indexRow))
     }
 }
 

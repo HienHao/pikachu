@@ -8,11 +8,16 @@ img {
   padding: 10px;
 }
 .main__play > div > div img {
-  border-top: 1px solid greenyellow;
-  border-right: 1px solid greenyellow;
+  border: 0.5px solid greenyellow;
 }
 
-div img:hover {
+.hoverBox:hover {
   opacity: 0.6;
   background-color: orangered;
+}
+.box .hoverBox {
+  z-index: 1000;
+}
+.box img {
+  z-index: 1;
 }
