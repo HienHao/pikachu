@@ -54,14 +54,14 @@ public class Algorithm {
     int max = Math.max(y1, y2);
     // run column
     for (int y = min; y <= max; y++) {
-    if (matrix[x][y] == barrier) { // if see barrier then die
-    System.out.println("die: " + x + "" + y);
-    return false;
-}
-System.out.println("ok: " + x + "" + y);
-}
-// not die -> success
-return true;
+        if (matrix[x][y] == barrier) { // if see barrier then die
+            System.out.println("die: " + x + "" + y);
+            return false;
+        }
+        System.out.println("ok: " + x + "" + y);
+    }
+    // not die -> success
+    return true;
 }
 
 private boolean checkLineY(int x1, int x2, int y) {

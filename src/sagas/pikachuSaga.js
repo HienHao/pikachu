@@ -28,10 +28,6 @@ export function* watcherClickElementPikachu() {
     // yield fork(workerClickElementPikachu, element1, element2);
 }
 
-function* clickTwoElement() {
-
-}
-
 /**
  *
  * @param result
@@ -41,6 +37,8 @@ function* clickTwoElement() {
 
 function* workerClickElementPikachu(element1, element2)  {
     console.log('Saga', element1, element2);
+    
+    // barrier
     // thuc hien click 2 elements
     // so sanh 2 type
     // neu 2 elements khac type ==> khong cho sang reducers
@@ -53,3 +51,6 @@ function* workerClickElementPikachu(element1, element2)  {
     //~~~trong trường hợp chỉ bắn sang reducers 1 element ==.> chỉ thay đổi được 1 element trong state
     // yield put({type: ActionTypes.CLICK_ELEMENT_SUCCESS, result});
 }
+
+
+
