@@ -12,10 +12,11 @@ class Play extends React.Component {
 
     render() {
         const {playProps, clickElement} = this.props;
-        function elementImage(element, indexRow) {
+        // component image
+        function elementImage(element, row, col) {
             return (
                 <div className="box" style={{width: '70px', height: '70px', position: 'relative'}}>
-                    <div className="hoverBox" style={{width: '70px', height: '70px', position: 'relative'}} onClick={() => clickElement(element, indexRow)}/>
+                    <div className="hoverBox" style={{width: '70px', height: '70px', position: 'relative'}} onClick={() => clickElement(element, row, col)}/>
                     {
                         element.statusEnable === false && <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} />
                     }
@@ -23,17 +24,17 @@ class Play extends React.Component {
             )
 
         }
-
-        function componentElement(elements, indexRow) {
+        // component array 16 images
+        function componentElement(elements, row) {
             return (
                 <div style={{display: "flex"}} className="main__play__items">
-                    {elements.map((element) => elementImage(element, indexRow))}
+                    {elements.map((element, col) => elementImage(element, row, col))}
                 </div>
             );
         }
 
         function displayElements(elements) {
-            return elements.map((element, index) => componentElement(element, index))
+            return elements.map((element, row) => componentElement(element, row))
         }
 
         return (
@@ -55,7 +56,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         getMapPikachu: () => dispatch(ActionsPikachu.getMapPikachu()),
-        clickElement: (element, indexRow) => dispatch(ActionsPikachu.clickElement(element, indexRow))
+        clickElement: (element, row, col) => dispatch(ActionsPikachu.clickElement(element, row, col))
     }
 }
 

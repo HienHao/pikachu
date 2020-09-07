@@ -2,18 +2,18 @@ import { v4 as uuidv4 } from 'uuid';
 import * as ActionTypes from "../actions/ActionTypes";
 
 const elements = [
-    {id: uuidv4(), image: '../assets/images/pikachu-1.png', type: 'pikachu1', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-2.png', type: 'pikachu2', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-3.png', type: 'pikachu3', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-4.png', type: 'pikachu4', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-5.png', type: 'pikachu5', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-6.png', type: 'pikachu6', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-7.png', type: 'pikachu7', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-8.png', type: 'pikachu8', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-9.png', type: 'pikachu9', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-10.png', type: 'pikachu10', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-11.png', type: 'pikachu11', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/pikachu-12.png', type: 'pikachu12', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/pikachu-1.png', type: 'pikachu1', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-2.png', type: 'pikachu2', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-3.png', type: 'pikachu3', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-4.png', type: 'pikachu4', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-5.png', type: 'pikachu5', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-6.png', type: 'pikachu6', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-7.png', type: 'pikachu7', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-8.png', type: 'pikachu8', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-9.png', type: 'pikachu9', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-10.png', type: 'pikachu10', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-11.png', type: 'pikachu11', statusEnable: false, barrier: true},
+    {id: uuidv4(), image: '../assets/images/pikachu-12.png', type: 'pikachu12', statusEnable: false, barrier: true},
 ]
 
 const initialState = matrixArray16x9(randomElements(elements));
@@ -59,6 +59,7 @@ function matrixArray16x9(elements) {
 }
 
 function checkLineX(matrix, y1, y2, x) {
+    debugger;
     //check point min max
     const min = Math.min(y1, y2);
     const max = Math.max(y1, y2);
@@ -77,7 +78,7 @@ function checkLineY(matrix, x1, x2, y) {
     const max = Math.max(x1, x2);
     //run row
     for(let x = min; x <= max; x++) {
-        if(matrix[x][y].barrier === true) {
+        if(matrix[x][y].barrier === false) {
             return false;
         }
     }
@@ -257,15 +258,23 @@ function PikachuReducer(state = initialState, action) {
             return [...state];
         case ActionTypes.CLICK_ELEMENT_SUCCESS:
             const {element1, element2} = action;
-            console.log('Click reducers', element1, element2);
-            // thay doi state
+            // vi tri cua 2 phan tu
+            const row1 = element1.row, row2 = element2.row;
+            const col1 = element1.col, col2 = element2.col;
+            // console.log('Click reducers', element1, element2);
             const newState = [...state];
-            console.log(newState);
-            debugger;
-            const item1 = newState[element1.index].find(el1 => el1.id === element1.element.id);
-            const item2 = newState[element2.index].find(el2 => el2.id === element2.element.id);
-            item1.statusEnable = !item1.statusEnable;
-            item2.statusEnable = !item2.statusEnable;
+            if(row1 === row2 && checkLineX(newState, col1, col2, row1)) {
+                debugger;
+                const item1 = newState[element1.row].find(el1 => el1.id === element1.element.id);
+                const item2 = newState[element2.row].find(el2 => el2.id === element2.element.id);
+                item1.statusEnable = !item1.statusEnable;
+                item1.barrier = !item1.barrier;
+                item2.statusEnable = !item2.statusEnable;
+                item2.barrier = !item2.barrier;
+                console.log(newState);
+                
+            }
+            // thay doi state
             return [...newState];
         default:
             return state;
