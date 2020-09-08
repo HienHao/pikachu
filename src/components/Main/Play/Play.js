@@ -15,20 +15,19 @@ class Play extends React.Component {
         // component image
         function elementImage(element, row, col) {
             return (
-                <div className="box" style={{width: '70px', height: '70px', position: 'relative'}}>
-                    <div className="hoverBox" style={{width: '70px', height: '70px', position: 'relative'}} onClick={() => clickElement(element, row, col)}/>
+                <div className="box" style={{width: '69px', height: '69px', position: 'relative'}}>
+                    <div className="hoverBox" style={{width: '69px', height: '69px', position: 'relative'}} onClick={() => clickElement(element, row, col)}/>
                     {
-                        element.statusEnable === false && <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} />
+                        (element.image.length !== 0  && element.statusEnable) === false ? <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} /> : ''
                     }
                 </div>
             )
-
         }
         // component array 16 images
         function componentElement(elements, row) {
             return (
                 <div style={{display: "flex"}} className="main__play__items">
-                    {elements.map((element, col) => elementImage(element, row, col))}
+                    {elements.map((element, col) =>  elementImage(element, row, col))}
                 </div>
             );
         }

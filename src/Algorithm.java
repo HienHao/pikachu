@@ -115,7 +115,6 @@ private int checkRectY(Point p1, Point p2) {
         if (checkLineY(pMinX.x, x, pMinX.y)
             && checkLineX(pMinX.y, pMaxX.y, x)
             && checkLineY(x, pMaxX.x, pMaxX.y)) {
-
             System.out.println("Rect y");
             System.out.println("(" + pMinX.x + "," + pMinX.y + ") -> (" + x
                 + "," + pMinX.y + ") -> (" + x + "," + pMaxX.y
