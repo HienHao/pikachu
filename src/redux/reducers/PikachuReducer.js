@@ -2,18 +2,18 @@ import { v4 as uuidv4 } from 'uuid';
 import * as ActionTypes from "../actions/ActionTypes";
 
 const elements = [
-    {id: uuidv4(), image: '../assets/images/1.png', type: 'pikachu1', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/2.png', type: 'pikachu2', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/3.png', type: 'pikachu3', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/4.png', type: 'pikachu4', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/5.png', type: 'pikachu5', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/6.png', type: 'pikachu6', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/7.png', type: 'pikachu7', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/8.png', type: 'pikachu8', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/9.png', type: 'pikachu9', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/10.png', type: 'pikachu10', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/11.png', type: 'pikachu11', statusEnable: false, barrier: false, checkLine: false},
-    {id: uuidv4(), image: '../assets/images/12.png', type: 'pikachu12', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/1.png', type: 'pikachu1', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/2.png', type: 'pikachu2', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/3.png', type: 'pikachu3', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/4.png', type: 'pikachu4', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/5.png', type: 'pikachu5', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/6.png', type: 'pikachu6', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/7.png', type: 'pikachu7', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/8.png', type: 'pikachu8', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/9.png', type: 'pikachu9', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/10.png', type: 'pikachu10', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/11.png', type: 'pikachu11', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/12.png', type: 'pikachu12', statusEnable: false, barrier: false},
 ]
 
 const initialState = matrixArray16x9(randomElements(elements));
@@ -24,9 +24,11 @@ function PikachuReducer(state = initialState, action) {
         case ActionTypes.GET_MAP_PIKACHU:
             return [...state];
         case ActionTypes.CLICK_ELEMENT_SUCCESS:
-            const {element1, element2} = action;
+            const {element1, element2, matrix} = action;
+            console.log('action: ', action);
             const newState = [...state];
             changeStatusEnable(newState, element1, element2);
+            // debugger;
             return [...newState];
         case ActionTypes.CLICK_REPLAY_SUCCESS:
             return matrixArray16x9(randomElements(elements));
@@ -122,6 +124,10 @@ export function checkLineX(matrix, y1, y2, x) {
         }
         console.log('success ', x,' , ', y);
     } 
+    removeDefaultCheckLine(matrix);
+    for(let i = min; i <= max; i++) {
+        matrix[x][i].checkLine = true;
+    }
     return true;
 }
 
@@ -139,11 +145,16 @@ export function checkLineY(matrix, x1, x2, y) {
         }
         console.log('success ', x,' , ', y);
     }
+    removeDefaultCheckLine(matrix);
+    for(let i = min; i <= max; i++) {
+        matrix[i][y].checkLine = true;
+    }
     return true;
 }
 
 // chu U
 export function checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target) {
+    console.log('checkLineBarrierXPlus');
     let pMinY = {x: x1, y: y1}, pMaxY = {x: x2, y: y2};
     if (y1 > y2) {
         pMinY = {x: x2, y: y2};
@@ -159,8 +170,20 @@ export function checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target) {
         {
             console.log('check line x have barrier');
             console.log('('+pMinY.x+','+pMinY.y+') -> ('+xm+','+pMinY.y+') -> ('+xm+','+pMaxY.y+') -> ('+pMaxY.x+','+pMaxY.y+')');
-            matrix[xm][pMinY.y].checkLine = true;
-            matrix[xm][pMaxY.y].checkLine = true;
+            removeDefaultCheckLine(matrix);
+            console.log('xm = ', xm);
+            for(let j = pMinY.y; j <= pMaxY.y; j++) {
+                matrix[xm][j].checkLine = true;
+                console.log('matrix[xm][j] = ', matrix[xm][j]);
+            }
+            // matrix[xm][pMinY.y].checkLine = true;
+            matrix[pMinY.x][pMinY.y].checkLine = true;
+            matrix[pMaxY.x][pMaxY.y].checkLine = true;
+            // matrix[xm][pMinY.y].checkLine = true;
+            // matrix[xm][pMaxY.y].checkLine = true;
+            // console.log('matrix checkLineBarrierXPlus = ', matrix);
+            // console.log('matrix reducer: ',matrix, 'matrix[',xm,'][',pMinY.y,'] = ', matrix[xm][pMinY.y], 'matrix[',xm,'][',pMaxY.y,'] = ', matrix[xm][pMaxY.y]);
+            console.log('matrix[',xm,'][',pMinY.y,'] = ', matrix[xm][pMinY.y]);
             return true;
         }
         target += 1;
@@ -171,6 +194,7 @@ export function checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target) {
 }
 
 export function checkLineBarrierXMinus(matrix, x1, y1, x2, y2, target) {
+    console.log('checkLineBarrierXMinus');
     let pMinY = {x: x1, y: y1}, pMaxY = {x: x2, y: y2};
     if (y1 > y2) {
         pMinY = {x: x2, y: y2};
@@ -184,17 +208,31 @@ export function checkLineBarrierXMinus(matrix, x1, y1, x2, y2, target) {
         {
             console.log('check line x have barrier');
             console.log('('+pMinY.x+','+pMinY.y+') -> ('+xm+','+pMinY.y+') -> ('+xm+','+pMaxY.y+') -> ('+pMaxY.x+','+pMaxY.y+')');
+            removeDefaultCheckLine(matrix);
+            console.log('xm = ', xm);
+            for(let j = pMinY.y; j <= pMaxY.y; j++) {
+                matrix[xm][j].checkLine = true;
+                console.log('matrix[',xm,'][',j,'] = ', matrix[xm][j]);
+            }
+            // matrix[xm][pMinY.y].checkLine = true;
+            matrix[pMinY.x][pMinY.y].checkLine = true;
+            matrix[pMaxY.x][pMaxY.y].checkLine = true;
+            // matrix[xm][pMinY.y].checkLine = true;
+            // matrix[xm][pMaxY.y].checkLine = true;
+            // console.log('matrix checkLineBarrierXMinus = ', matrix);
+            // console.log('matrix reducer: ',matrix, 'matrix[',xm,'][',pMinY.y,'] = ', matrix[xm][pMinY.y], 'matrix[',xm,'][',pMaxY.y,'] = ', matrix[xm][pMaxY.y]);
+            console.log('matrix[',xm,'][',pMinY.y,'] = ', matrix[xm][pMinY.y]);
             return true;
         }
         target -= 1;
-        checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target);
+        checkLineBarrierXMinus(matrix, x1, y1, x2, y2, target);
     }
     return false;
 }
 
 export function checkLineBarrierYPlus(matrix, x1, y1, x2, y2, target) {
     let pMinX = {x: x1, y: y1}, pMaxX = {x: x2, y: y2};
-    if (y1 > y2) {
+    if (x1 > x2) {
         pMinX = {x: x2, y: y2};
         pMaxX = {x: x1, y: y1};
     }
@@ -211,7 +249,7 @@ export function checkLineBarrierYPlus(matrix, x1, y1, x2, y2, target) {
             return true;
         }
         target += 1;
-        checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target);
+        checkLineBarrierYPlus(matrix, x1, y1, x2, y2, target);
     }
     return false;
 
@@ -219,7 +257,7 @@ export function checkLineBarrierYPlus(matrix, x1, y1, x2, y2, target) {
 
 export function checkLineBarrierYMinus(matrix, x1, y1, x2, y2, target) {
     let pMinX = {x: x1, y: y1}, pMaxX = {x: x2, y: y2};
-    if (y1 > y2) {
+    if (x1 > x2) {
         pMinX = {x: x2, y: y2};
         pMaxX = {x: x1, y: y1};
     }
@@ -235,7 +273,7 @@ export function checkLineBarrierYMinus(matrix, x1, y1, x2, y2, target) {
             return true;
         }
         target -= 1;
-        checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target);
+        checkLineBarrierYMinus(matrix, x1, y1, x2, y2, target);
     }
     return false;
 }
@@ -260,6 +298,16 @@ export function checkReactX(matrix, x1, y1, x2, y2) {
                 console.log("(" + pMinY.x + "," + pMinY.y + ") -> ("
                 + pMinY.x + "," + y + ") -> (" + pMaxY.x + "," + y
                 + ") -> (" + pMaxY.x + "," + pMaxY.y + ")");
+                removeDefaultCheckLine(matrix);
+                matrix[pMinY.x][pMinY.y].checkLine = true;
+                for(let i = pMinY.x; i <= pMaxY.x; i++) {
+                    matrix[i][y].checkLine = true;    
+                }
+                // matrix[pMinY.x][y].checkLine = true;
+                // matrix[pMaxY.x][y].checkLine = true;
+                matrix[pMaxY.x][pMaxY.y].checkLine = true;
+                console.log('matrix checkReactX = ', matrix);
+                console.log('matrix[',pMinY.x,'][',y,'] = ', matrix[pMinY.x][y], '\n matrix[',pMaxY.x,'][',y,'] = ', matrix[pMaxY.x][y]);
                 return true;
             }
     }
@@ -284,6 +332,16 @@ export function checkReactY(matrix, x1, y1, x2, y2) {
                 console.log("(" + pMinX.x + "," + pMinX.y + ") -> (" + x
                 + "," + pMinX.y + ") -> (" + x + "," + pMaxX.y
                 + ") -> (" + pMaxX.x + "," + pMaxX.y + ")");
+                removeDefaultCheckLine(matrix);
+                matrix[pMinX.x][pMinX.y].checkLine = true;
+                for(let i = pMinX.y; i < pMaxX.y; i++) {
+                    matrix[x][i].checkLine = true;
+                }
+                // matrix[x][pMinX.y].checkLine = true;
+                // matrix[x][pMaxX.y].checkLine = true;
+                matrix[pMaxX.x][pMaxX.y].checkLine = true;
+                console.log('matrix checkReactY = ', matrix);
+                console.log('matrix[',x,'][',pMinX.y,'] = ', matrix[x][pMinX.y], '\n matrix[',x,'][',pMaxX.y,'] = ', matrix[x][pMaxX.y]);
                 return true;
             }
     }
@@ -303,6 +361,12 @@ export function checkTwoLineY(matrix, x1, y1, x2, y2) {
             && checkLineY(matrix, pMin.x, pMax.x, pMax.y)) {
                 console.log('Two line x');
                 console.log('('+pMin.x+','+pMin.y+') -> ('+pMin.x +','+pMax.y+') -> ('+pMax.x+','+pMax.y+')');
+                removeDefaultCheckLine(matrix);
+                matrix[pMin.x][pMin.y].checkLine = true;
+                matrix[pMin.x][pMax.y].checkLine = true;
+                matrix[pMax.x][pMax.y].checkLine = true;
+                console.log('matrix checkTwoLineY = ', matrix);
+                console.log('matrix[',pMin.x,'][',pMin.y,'] = ', matrix[pMin.x][pMin.y], '\n matrix[',pMin.x,'][',pMax.y,'] = ', matrix[pMin.x][pMax.y], '\n matrix[',pMax.x,'][',pMax.y,'] = ', matrix[pMax.x][pMax.y]);
                 return true;
             }
     }
@@ -321,6 +385,12 @@ export function checkTwoLineX(matrix, x1, y1, x2, y2) {
             && checkLineX(matrix, pMin.y, pMax.y, pMax.x)) {
                 console.log('Two line y');
                 console.log('('+pMin.x+','+pMin.y+') -> ('+pMin.x +','+pMax.y+') -> ('+pMax.x+','+pMax.y+')');
+                removeDefaultCheckLine(matrix);
+                matrix[pMin.x][pMin.y].checkLine = true;
+                matrix[pMin.x][pMax.y].checkLine = true;
+                matrix[pMax.x][pMax.y].checkLine = true;
+                console.log('matrix checkTwoLineX = ', matrix);
+                console.log('matrix[',pMin.x,'][',pMin.y,'] = ', matrix[pMin.x][pMin.y], '\n matrix[',pMin.x,'][',pMax.y,'] = ', matrix[pMin.x][pMax.y], '\n matrix[',pMax.x,'][',pMax.y,'] = ', matrix[pMax.x][pMax.y]);
                 return true;
             }
     }
@@ -344,6 +414,14 @@ export function checkMoreLineX(matrix, x1, y1, x2, y2) {
             console.log('('+pMinY.x+','+pMinY.y+') -> (' +pMinY.x+','+pMaxY.y+') -> ('
             +pMinY.x+','+y+') -> ('+pMaxY.x+','+y
             +') -> ('+pMaxY.x+','+pMaxY.y+')');
+            removeDefaultCheckLine(matrix);
+            matrix[pMinY.x][pMinY.y].checkLine = true;
+            matrix[pMinY.x][pMaxY.y].checkLine = true;
+            matrix[pMinY.x][y].checkLine = true;
+            matrix[pMaxY.x][y].checkLine = true;
+            matrix[pMaxY.x][pMaxY.y].checkLine = true;
+            console.log('matrix checkMoreLineX = ', matrix);
+            console.log('matrix[',pMinY.x,'][',pMaxY.y,'] = ', matrix[pMinY.x][pMaxY.y], '\n matrix[',pMinY.x,'][',y,'] = ', matrix[pMinY.x][y], '\n matrix[',pMaxY.x,'][',y,']');
             return true;
         }
     }
@@ -368,6 +446,14 @@ export function checkMoreLineY(matrix, x1, y1, x2, y2) {
                 +') -> ('+pMaxX.x+','+pMinX.y+') -> ('
                 +x+','+pMinX.y+') -> ('+x+','+pMaxX.y+
                 ') -> ('+pMaxX.x+','+pMaxX.y+')');
+            removeDefaultCheckLine(matrix);
+            
+            matrix[pMaxX.x][pMinX.y].checkLine = true;
+            matrix[x][pMinX.y].checkLine = true;
+            matrix[x][pMaxX.y].checkLine = true;
+            matrix[pMaxX.x][pMaxX.y].checkLine = true;
+            // console.log('matrix checkMoreLineY = ', matrix);
+            // console.log('matrix[',pMaxX.x,'][',pMinX.y,'] = ', matrix[pMaxX.x][pMinX.y], '\n matrix[',x,'][',pMinX.y,'] = ', matrix[x][pMinX.y], '\n matrix[',x,'][',pMaxX.y,'] = ', matrix[x][pMaxX.y]);
             return true;
         }
     }
@@ -382,5 +468,10 @@ function changeStatusEnable(state, element1, element2) {
     item2.statusEnable = true;
     item2.barrier = true;
 }
+
+function removeDefaultCheckLine(matrix) {
+    matrix.map(element => element.map(e => delete e.checkLine));
+}
+
 export default PikachuReducer;
 

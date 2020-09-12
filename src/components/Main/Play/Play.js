@@ -15,8 +15,10 @@ class Play extends React.Component {
         debugger;
         // component image
         function elementImage(element, row, col) {
+            const colorCheckLine = element.checkLine ? 'red' : '';
+            // console.log('element: ', checkLine);
             return (
-                <div className="box" style={{width: '69px', height: '69px', position: 'relative'}}>
+                <div className="box" style={{width: '69px', height: '69px', position: 'relative', background: element.checkLine ? colorCheckLine: ''}}>
                     <div className="hoverBox" 
                         style={{width: '69px', height: '69px', position: 'relative'}} 
                         onClick={() => {
@@ -25,7 +27,8 @@ class Play extends React.Component {
                         
                         />
                     {
-                        element.statusEnable === false ? <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} alt='anh' key={element.id} /> : ''
+                        element.statusEnable === false ? <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} alt='anh' key={element.id} /> 
+                        : <div></div>
                     }
                 </div>
             )
@@ -34,7 +37,7 @@ class Play extends React.Component {
         function componentElement(elements, row) {
             return (
                 <div style={{display: "flex"}} className="main__play__items">
-                    {elements.map((element, col) =>  element.image !== '' && elementImage(element, row, col))}
+                    {elements.map((element, col) => elementImage(element, row, col))}
                 </div>
             );
         }

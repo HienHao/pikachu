@@ -92,16 +92,18 @@ function* workerClickElementPikachu(element1, element2) {
             checkLineBarrierXPlus(newState, row1, col1, row2, col2, 1) ||
             checkLineBarrierXMinus(newState, row1, col1, row2, col2, -1) 
             ) {
+                console.log('new state: ', newState);
                 // debugger;
                 yield put({
                     type: ActionTypes.CLICK_ELEMENT_SUCCESS,
                     element1,
                     element2,
+                    matrix: newState
                 });
                 yield put({
                     type: ActionTypes.SCORE,
                     element1,
-                    element2
+                    element2,
                 });
 
                 // console.log(newState);

@@ -22,10 +22,10 @@ function InforReducer(state = initialSate, action) {
                 newState.count = 0;
                 newState.level += 1;
             }
-            console.log('state: ', newState);
+            // console.log('state: ', newState);
             return {...newState};
         case ActionTypes.CLICK_POSITION_SUCCESS:
-            console.log('position');
+            // console.log('position');
             const statePosition = {...state};
             statePosition.position -= 1;
             if(statePosition.position === 0) {
