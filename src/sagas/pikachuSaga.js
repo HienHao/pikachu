@@ -1,5 +1,18 @@
-import {put, take, fork} from 'redux-saga/effects';
-import * as ActionTypes from '../redux/actions/ActionTypes';
+import {put,take,fork} from "redux-saga/effects";
+import * as ActionTypes from "../redux/actions/ActionTypes";
+import {checkLineX, 
+        checkLineY, 
+        checkReactX, 
+        checkReactY, 
+        checkTwoLineX, 
+        checkTwoLineY, 
+        checkMoreLineX, 
+        checkMoreLineY, 
+        checkLineBarrierXPlus, 
+        checkLineBarrierXMinus,
+        spliceArray,
+        concatArray,
+        matrixArray16x9} from '../redux/reducers/PikachuReducer';
 
 /**
  *
@@ -9,7 +22,7 @@ import * as ActionTypes from '../redux/actions/ActionTypes';
  */
 
 export function* watcherClickElementPikachu() {
-    while(true) {
+    while (true) {
         // click element o row nao???
         const element1 = yield take(ActionTypes.CLICK_ELEMENT);
         const element2 = yield take(ActionTypes.CLICK_ELEMENT);
@@ -28,6 +41,19 @@ export function* watcherClickElementPikachu() {
     // yield fork(workerClickElementPikachu, element1, element2);
 }
 
+export function* watcherClickPosition() {
+    while(true) {
+        const arrayMatrix = yield take(ActionTypes.CLICK_POSITION);
+        yield fork(workerClickPosition, arrayMatrix);
+    }
+}
+
+export function* watcherClickReplay() {
+    while(true) {
+        yield take(ActionTypes.CLICK_REPLAY);
+        yield fork(workerClickReplay);
+    }
+}
 /**
  *
  * @param result
@@ -35,9 +61,9 @@ export function* watcherClickElementPikachu() {
  * worker bien doi trang thai enable: true
  */
 
-function* workerClickElementPikachu(element1, element2)  {
-    console.log('Saga', element1, element2);
-    
+function* workerClickElementPikachu(element1, element2) {
+    // console.log("Saga", element1, element2);
+
     // barrier
     // thuc hien click 2 elements
     // so sanh 2 type
@@ -45,12 +71,65 @@ function* workerClickElementPikachu(element1, element2)  {
     // const element = yield call(() => checkTypeTwoElements(result.element));
 
     //~~~trường hợp gửi 2 element sang reducers
-    if(element1.element.type === element2.element.type && element1.element.id !== element2.element.id) {
-        yield put({type: ActionTypes.CLICK_ELEMENT_SUCCESS, element1, element2});
+    if (
+        element1.element.type === element2.element.type &&
+        element1.element.id !== element2.element.id
+    ) {
+        const row1 = element1.row,
+            row2 = element2.row;
+        const col1 = element1.col,
+            col2 = element2.col;
+        const newState = element1.matrix;
+        if (
+            (row1 === row2 && checkLineX(newState, col1, col2, row1)) ||
+            (col1 === col2 && checkLineY(newState, row1, row2, col1)) ||
+            checkReactX(newState, row1, col1, row2, col2) ||
+            checkReactY(newState, row1, col1, row2, col2) ||
+            checkTwoLineX(newState, row1, col1, row2, col2) ||
+            checkTwoLineY(newState, row1, col1, row2, col2) ||
+            checkMoreLineX(newState, row1, col1, row2, col2) ||
+            checkMoreLineY(newState, row1, col1, row2, col2) ||
+            checkLineBarrierXPlus(newState, row1, col1, row2, col2, 1) ||
+            checkLineBarrierXMinus(newState, row1, col1, row2, col2, -1) 
+            ) {
+                // debugger;
+                yield put({
+                    type: ActionTypes.CLICK_ELEMENT_SUCCESS,
+                    element1,
+                    element2,
+                });
+                yield put({
+                    type: ActionTypes.SCORE,
+                    element1,
+                    element2
+                });
+
+                // console.log(newState);
+        }
     }
+    // }
     //~~~trong trường hợp chỉ bắn sang reducers 1 element ==.> chỉ thay đổi được 1 element trong state
     // yield put({type: ActionTypes.CLICK_ELEMENT_SUCCESS, result});
+    // if(element1.element.type === element2.element.type && element1.element.id !== element2.element.id) {
+    //     yield put({type: ActionTypes.CLICK_ELEMENT_SUCCESS, element1, element2});
+    // }
 }
 
+function* workerClickPosition(action) {
+    // const newArrayMatrix = matrixArray16x9(concatArray(action.matrix));
+    // console.log(spliceArray(action.matrix, []));
+    const elements = concatArray(action.matrix); // 144 elements
+    // random
+    const random = spliceArray([],elements);
+    const newArrayMatrix = matrixArray16x9(random);
+    // random element
 
+    // push to new array
 
+    // delete element old array
+    yield put({type: ActionTypes.CLICK_POSITION_SUCCESS, newArrayMatrix});
+}
+
+function* workerClickReplay() {
+    yield put({type: ActionTypes.CLICK_REPLAY_SUCCESS});
+}

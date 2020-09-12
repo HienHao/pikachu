@@ -2,50 +2,91 @@ import { v4 as uuidv4 } from 'uuid';
 import * as ActionTypes from "../actions/ActionTypes";
 
 const elements = [
-    {id: uuidv4(), image: '../assets/images/1.png', type: 'pikachu1', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/2.png', type: 'pikachu2', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/3.png', type: 'pikachu3', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/4.png', type: 'pikachu4', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/5.png', type: 'pikachu5', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/6.png', type: 'pikachu6', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/7.png', type: 'pikachu7', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/8.png', type: 'pikachu8', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/9.png', type: 'pikachu9', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/10.png', type: 'pikachu10', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/11.png', type: 'pikachu11', statusEnable: false, barrier: false},
-    {id: uuidv4(), image: '../assets/images/12.png', type: 'pikachu12', statusEnable: false, barrier: false},
+    {id: uuidv4(), image: '../assets/images/1.png', type: 'pikachu1', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/2.png', type: 'pikachu2', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/3.png', type: 'pikachu3', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/4.png', type: 'pikachu4', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/5.png', type: 'pikachu5', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/6.png', type: 'pikachu6', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/7.png', type: 'pikachu7', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/8.png', type: 'pikachu8', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/9.png', type: 'pikachu9', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/10.png', type: 'pikachu10', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/11.png', type: 'pikachu11', statusEnable: false, barrier: false, checkLine: false},
+    {id: uuidv4(), image: '../assets/images/12.png', type: 'pikachu12', statusEnable: false, barrier: false, checkLine: false},
 ]
 
 const initialState = matrixArray16x9(randomElements(elements));
 
+
+function PikachuReducer(state = initialState, action) {
+    switch (action.type) {
+        case ActionTypes.GET_MAP_PIKACHU:
+            return [...state];
+        case ActionTypes.CLICK_ELEMENT_SUCCESS:
+            const {element1, element2} = action;
+            const newState = [...state];
+            changeStatusEnable(newState, element1, element2);
+            return [...newState];
+        case ActionTypes.CLICK_REPLAY_SUCCESS:
+            return matrixArray16x9(randomElements(elements));
+        case ActionTypes.CLICK_POSITION_SUCCESS:
+            return [...action.newArrayMatrix];
+        default:
+            return state;
+    }
+}
+
+// generate 144 elements
+function genOneHundredFortyFourElements(newArray, id, image, type, statusEnable, barrier, checkLine) {
+    for (let i = 0; i < 12; i++) {
+        newArray.push({id: uuidv4(), image, type, statusEnable, barrier, checkLine});
+    }
+    return newArray;
+}
+// xoa duong bien va gop 2 mang
+export function concatArray(oldArray) {
+    function concatTwoElements(element1, element2) {
+        return element1.concat(element2);
+    }
+
+    // oldArray -> array
+    // elements in oldArray is array
+    const convertArray = [...oldArray];
+    convertArray.splice(0, 1);
+    convertArray.splice(convertArray.length - 1, 1);
+    // xoa duong bien
+    for(let i = 0; i < convertArray.length; i++) {
+        if(convertArray[i]) {
+            convertArray[i].splice(0, 1);
+            convertArray[i].splice(convertArray[i].length - 1, 1);
+        }
+    }
+    return convertArray.reduce(concatTwoElements);
+}  
+// random mang 1 chieu
+export function spliceArray(arrayRandom, array) {
+    let indexItem = null;
+    let item = null;
+    for (let i = 0; i < 144; i++) {
+        indexItem = Math.floor(Math.random() * array.length);
+        item = array[indexItem];
+        arrayRandom.push(item);
+        array.splice(indexItem, 1);
+    }
+    return arrayRandom;
+}
 // random mang 1 chieu
 function randomElements(elements) {
     //sinh 114 phan tu trong state
     // trong do 1 phan tu duoc gen ra 12 lan
-    let newArray = [];
-    function genOneHundredFortyFourElements(id, image, type, statusEnable, barrier) {
-        for (let i = 0; i < 12; i++) {
-            newArray.push({id: uuidv4(), image, type, statusEnable, barrier});
-        }
-        return newArray;
-    }
-    elements.map(e => genOneHundredFortyFourElements(e.id, e.image, e.type, e.statusEnable, e.barrier));
-    // random phan tu trong mang
-    let indexItem = null;
-    let item = null;
-    let arrayElementsRandom = [];
-    // them phan tu random vao mang moi va xoa o mang cu
-    for (let i = 0; i < 144; i++) {
-        indexItem = Math.floor(Math.random() * newArray.length);
-        item = newArray[indexItem];
-        arrayElementsRandom.push(item);
-        newArray.splice(indexItem, 1);
-    }
-    return arrayElementsRandom;
+    const newArray = [];
+    elements.map(e => genOneHundredFortyFourElements(newArray ,e.id, e.image, e.type, e.statusEnable, e.barrier, e.checkLine));
+    return spliceArray([], newArray);
 }
 
-// can xem lai
-function matrixArray16x9(elements) {
+// cat mang 1 chieu thanh mang 2 chieu
+export function matrixArray16x9(elements) {
     let arraySixteenElements = null;
     let matrixArray = [];
     let arrayBarrier = [];
@@ -68,13 +109,12 @@ function matrixArray16x9(elements) {
     matrixArray.push(arrayBarrier);
     return matrixArray;
 }
-
-function checkLineX(matrix, y1, y2, x) {
-    debugger;
+// canh nhau
+export function checkLineX(matrix, y1, y2, x) {
     //check point min max
     const min = Math.min(y1, y2);
     const max = Math.max(y1, y2);
-    //run col
+    // debugger;
     for(let y = min+1; y < max; y++) {
         if(matrix[x][y].barrier !== true) {
             console.log('die ', x,' , ', y);
@@ -85,76 +125,130 @@ function checkLineX(matrix, y1, y2, x) {
     return true;
 }
 
-function checkLineY(matrix, x1, x2, y) {
+export function checkLineY(matrix, x1, x2, y) {
     //check point min, max
     const min = Math.min(x1, x2);
     const max = Math.max(x1, x2);
     //run row
+    // debugger;
     for(let x = min+1; x < max; x++) {
         if(matrix[x][y].barrier !== true) {
             console.log('die ', x,' , ', y);
+            // debugger;
             return false;
         }
         console.log('success ', x,' , ', y);
     }
     return true;
 }
-function checkLineY1(matrix, x1, x2, y) {
-    //check point min, max
-    const min = Math.min(x1, x2);
-    const max = Math.max(x1, x2);
-    //run row
-    for(let x = min; x < max; x++) {
-        if(matrix[x][y].barrier !== true) {
-            console.log('die ', x,' , ', y);
-            return false;
-        }
-        console.log('success ', x,' , ', y);
+
+// chu U
+export function checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target) {
+    let pMinY = {x: x1, y: y1}, pMaxY = {x: x2, y: y2};
+    if (y1 > y2) {
+        pMinY = {x: x2, y: y2};
+        pMaxY = {x: x1, y: y1};
     }
-    return true;
-}
-function checkLineYHaveBarrier(matrix, x1, y1, x2, y2) {
-    debugger;
-    const yMin = Math.min(y1, y2);
-    const yMax = Math.max(y1, y2);
-    let x = x1+1;
-    const checkLine = checkLineY1(matrix, x1, x, yMin);
-    debugger;
-    if (checkLineY1(matrix, x1, x, yMin)) {
-        debugger;
-        const checklinex = checkLineX(matrix, yMin, yMax, x);
-        const checkliney = checkLineY(matrix, x, x2, yMax);
-        debugger;
-        if (checkLineX(matrix, yMin, yMax, x)
-        && checkLineY(matrix, x, x2, yMax)) {
+    // x chay 
+    let xm = x1 + target;
+    // check line x - > xm
+    if(target > 18 || target < 0) return false;
+    if(checkLineY(matrix, pMinY.x, xm, pMinY.y)) {
+        if (checkLineX(matrix, pMinY.y, pMaxY.y, xm)
+        && checkLineY(matrix, xm, pMaxY.x, pMaxY.y)) 
+        {
             console.log('check line x have barrier');
-            console.log('('+x1+','+yMin+') -> ('+x+','+yMin+') -> ('+x+','+yMax+') -> ('+x2+','+yMax+')');
+            console.log('('+pMinY.x+','+pMinY.y+') -> ('+xm+','+pMinY.y+') -> ('+xm+','+pMaxY.y+') -> ('+pMaxY.x+','+pMaxY.y+')');
+            matrix[xm][pMinY.y].checkLine = true;
+            matrix[xm][pMaxY.y].checkLine = true;
             return true;
         }
-    } else {
-        x1++;
-        if (x === 18) {
-            x = x1 - 1;
-            checkLineYHaveBarrier(matrix, x, y1, x2, y2);
-            x--;
-            if(x === 0) return false;
-        }
-        checkLineYHaveBarrier(matrix, x, y1, x2, y2);
+        target += 1;
+        checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target);
     }
+    return false;
+
 }
 
-function checkLineXHaveBarrier(matrix, x1, y1, x2, y2) {
-    
+export function checkLineBarrierXMinus(matrix, x1, y1, x2, y2, target) {
+    let pMinY = {x: x1, y: y1}, pMaxY = {x: x2, y: y2};
+    if (y1 > y2) {
+        pMinY = {x: x2, y: y2};
+        pMaxY = {x: x1, y: y1};
+    }
+    let xm = x1 + target;
+    // debugger;
+    if(checkLineY(matrix, pMinY.x, xm, pMinY.y)) {
+        if (checkLineX(matrix, pMinY.y, pMaxY.y, xm)
+        && checkLineY(matrix, xm, pMaxY.x, pMaxY.y)) 
+        {
+            console.log('check line x have barrier');
+            console.log('('+pMinY.x+','+pMinY.y+') -> ('+xm+','+pMinY.y+') -> ('+xm+','+pMaxY.y+') -> ('+pMaxY.x+','+pMaxY.y+')');
+            return true;
+        }
+        target -= 1;
+        checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target);
+    }
+    return false;
 }
 
+export function checkLineBarrierYPlus(matrix, x1, y1, x2, y2, target) {
+    let pMinX = {x: x1, y: y1}, pMaxX = {x: x2, y: y2};
+    if (y1 > y2) {
+        pMinX = {x: x2, y: y2};
+        pMaxX = {x: x1, y: y1};
+    }
+    // x chay 
+    let ym = y1 + target;
+    // check line x - > xm
+    if(target > 11 || target < 0) return false;
+    if(checkLineY(matrix, pMinX.y, ym, pMinX.x)) {
+        if (checkLineX(matrix, pMinX.x, pMaxX.x, ym)
+        && checkLineY(matrix, ym, pMaxX.y, pMaxX.x)) 
+        {
+            console.log('check line x have barrier');
+            console.log('('+pMinX.x+','+pMinX.y+') -> ('+pMinX.x+','+ym+') -> ('+pMaxX.x+','+ym+') -> ('+pMaxX.x+','+pMaxX.y+')');
+            return true;
+        }
+        target += 1;
+        checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target);
+    }
+    return false;
+
+}
+
+export function checkLineBarrierYMinus(matrix, x1, y1, x2, y2, target) {
+    let pMinX = {x: x1, y: y1}, pMaxX = {x: x2, y: y2};
+    if (y1 > y2) {
+        pMinX = {x: x2, y: y2};
+        pMaxX = {x: x1, y: y1};
+    }
+    let ym = y1 + target;
+    if(target > 11 || target < 0) return false;
+    // debugger;
+    if(checkLineY(matrix, pMinX.y, ym, pMinX.x)) {
+        if (checkLineX(matrix, pMinX.x, pMaxX.x, ym)
+        && checkLineY(matrix, ym, pMaxX.y, pMaxX.x)) 
+        {
+            console.log('check line x have barrier');
+            console.log('('+pMinX.x+','+pMinX.y+') -> ('+pMinX.x+','+ym+') -> ('+pMaxX.x+','+ym+') -> ('+pMaxX.x+','+pMaxX.y+')');
+            return true;
+        }
+        target -= 1;
+        checkLineBarrierXPlus(matrix, x1, y1, x2, y2, target);
+    }
+    return false;
+}
+
+// chu z
 //kiem tra lai dau vao khi gap loi
-function checkReactX(matrix, x1, y1, x2, y2) {
+export function checkReactX(matrix, x1, y1, x2, y2) {
     console.log('ckeck react x');
     // find point have y min and max
     let pMinY = {x: x1, y: y1}, pMaxY = {x: x2,y: y2};
     if(y1 > y2) {
-       pMinY = {x2, y2};
-       pMaxY = {x1, y1};
+       pMinY = {x: x2, y: y2};
+       pMaxY = {x: x1, y: y1};
     }
     if(x1 === x2) return false;
     for(let y = pMinY.y + 1;y < pMaxY.y; y++) {
@@ -172,18 +266,15 @@ function checkReactX(matrix, x1, y1, x2, y2) {
     return false;
 }
 
-function checkReactY(matrix, x1, y1, x2, y2) {
-    debugger;
+export function checkReactY(matrix, x1, y1, x2, y2) {
     console.log('ckeck react y');
     // find point have y min and max
     let pMinX = {x: x1, y: y1}, pMaxX = {x: x2,y: y2};
     if(x1 > x2) {
-       pMinX = {x2, y2};
-       pMaxX = {x1, y1};
+       pMinX = {x: x2, y: y2};
+       pMaxX = {x: x1, y: y1};
     }
-    debugger;
     if(y1 === y2) return false;
-    debugger;
     for(let x = pMinX.x + 1;x < pMaxX.x; x++) {
         // (matrix[pMaxY.x][y].barrier === true)
         if( checkLineX(matrix, pMinX.x, x, pMinX.y)
@@ -199,13 +290,14 @@ function checkReactY(matrix, x1, y1, x2, y2) {
     return false;
 }
 
-function checkTwoLineY(matrix, x1, y1, x2, y2) {
+export function checkTwoLineY(matrix, x1, y1, x2, y2) {
     console.log('check two line y');
     let pMin = {x: x1, y: y1}, pMax = {x: x2, y: y2};
     if(x1 > x2) {
-        pMin = {x1, y2};
-        pMax = {x1, y1};
+        pMin = {x: x2, y: y2};
+        pMax = {x: x1, y: y1};
     }
+    // debugger;
     for(let x = pMin.x; x < pMax.x; x++) {
         if(checkLineX(matrix, pMin.y, pMax.y, pMin.x)
             && checkLineY(matrix, pMin.x, pMax.x, pMax.y)) {
@@ -217,12 +309,12 @@ function checkTwoLineY(matrix, x1, y1, x2, y2) {
     return false;
 }
 
-function checkTwoLineX(matrix, x1, y1, x2, y2) {
+export function checkTwoLineX(matrix, x1, y1, x2, y2) {
     console.log('check two line x');
     let pMin = {x: x1, y: y1}, pMax = {x: x2, y: y2};
     if(y1 > y2) {
-        pMin = {x1, y2};
-        pMax = {x1, y1};
+        pMin = {x: x2, y: y2};
+        pMax = {x: x1, y: y1};
     }
     for(let y = pMin.y; y < pMax.y; y++) {
         if(checkLineY(matrix, pMin.x, pMax.x, pMin.y)
@@ -235,12 +327,12 @@ function checkTwoLineX(matrix, x1, y1, x2, y2) {
     return false;
 }
 
-function checkMoreLineX(matrix, x1, y1, x2, y2) {
+export function checkMoreLineX(matrix, x1, y1, x2, y2) {
     console.log('check more line x');
     let pMinY = {x: x1, y: y1}, pMaxY = {x: x2, y: y2};
     if(y1 > y2) {
-        pMaxY = {x2, y2};
-        pMinY = {x1, y1};
+        pMaxY = {x: x2, y: y2};
+        pMinY = {x: x1, y: y1};
     }
     if(y1 === y2) return false;
     for(let y = pMinY.y; y < pMaxY.y; y++) {
@@ -258,12 +350,12 @@ function checkMoreLineX(matrix, x1, y1, x2, y2) {
     return false;
 }
 
-function checkMoreLineY(matrix, x1, y1, x2, y2) {
+export function checkMoreLineY(matrix, x1, y1, x2, y2) {
     console.log('check more line y');
     let pMinX = {x: x1, y: y1}, pMaxX = {x: x2, y: y2};
-    if(y1 > y2) {
-        pMaxX = {x2, y2};
-        pMinX = {x1, y1};
+    if(x1 > x2) {
+        pMaxX = {x: x2, y: y2};
+        pMinX = {x: x1, y: y1};
     }
     if(x1 === x2) return false;
     for(let x = pMinX.x; x < pMaxX.x; x++) {
@@ -290,74 +382,5 @@ function changeStatusEnable(state, element1, element2) {
     item2.statusEnable = true;
     item2.barrier = true;
 }
-
-function PikachuReducer(state = initialState, action) {
-    switch (action.type) {
-        case ActionTypes.GET_MAP_PIKACHU:
-            return [...state];
-        case ActionTypes.CLICK_ELEMENT_SUCCESS:
-            const {element1, element2} = action;
-            // vi tri cua 2 phan tu
-            const row1 = element1.row, row2 = element2.row;
-            const col1 = element1.col, col2 = element2.col;
-            const newState = [...state];
-            debugger;
-            if(row1 === row2) {
-                if(checkLineX(newState, col1, col2, row1)) {
-                    changeStatusEnable(newState, element1, element2);
-                    // debugger;
-                    console.log('line x');
-                    // console.log(newState);    
-                } else {
-                    // checkLineYHaveBarrier(newState, row1, col1, row2, col2);
-                    console.log('line x have barrier');
-                }
-            }
-            if(col1 === col2) {
-                if(checkLineY(newState, row1, row2, col1)) {
-                    changeStatusEnable(newState, element1, element2);
-                    console.log('line y');
-                } else {
-
-                }
-               
-            }
-            if(checkReactX(newState, row1, col1, row2, col2)) {
-                console.log('React x');
-                debugger;
-                changeStatusEnable(newState, element1, element2);
-            }
-            if(checkReactY(newState, row1, col1, row2, col2)) {
-                console.log('React y');
-                debugger;
-                changeStatusEnable(newState, element1, element2);
-            }
-            if(checkTwoLineX(newState, row1, col1, row2, col2)) {
-                console.log('React two line x');
-                debugger;
-                changeStatusEnable(newState, element1, element2);
-            }
-            if(checkTwoLineY(newState, row1, col1, row2, col2)) {
-                console.log('React tow line y');
-                debugger;
-                changeStatusEnable(newState, element1, element2);
-            }
-            if(checkMoreLineX(newState, row1, col1, row2, col2)) {
-                console.log('React more line x');
-                debugger;
-                changeStatusEnable(newState, element1, element2);
-            }
-            if(checkMoreLineY(newState, row1, col1, row2, col2)) {
-                console.log('React more line y');
-                debugger;
-                changeStatusEnable(newState, element1, element2);
-            }
-            // thay doi state
-            return [...newState];
-        default:
-            return state;
-    }
-}
-
 export default PikachuReducer;
 

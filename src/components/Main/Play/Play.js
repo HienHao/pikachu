@@ -12,13 +12,20 @@ class Play extends React.Component {
 
     render() {
         const {playProps, clickElement} = this.props;
+        debugger;
         // component image
         function elementImage(element, row, col) {
             return (
                 <div className="box" style={{width: '69px', height: '69px', position: 'relative'}}>
-                    <div className="hoverBox" style={{width: '69px', height: '69px', position: 'relative'}} onClick={() => clickElement(element, row, col)}/>
+                    <div className="hoverBox" 
+                        style={{width: '69px', height: '69px', position: 'relative'}} 
+                        onClick={() => {
+                            clickElement(playProps, element, row, col);
+                        }}
+                        
+                        />
                     {
-                        (element.image.length !== 0  && element.statusEnable) === false ? <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} /> : ''
+                        element.statusEnable === false ? <img style={{position: 'absolute', left: 0, top: 0}} src={element.image} alt='anh' key={element.id} /> : ''
                     }
                 </div>
             )
@@ -27,7 +34,7 @@ class Play extends React.Component {
         function componentElement(elements, row) {
             return (
                 <div style={{display: "flex"}} className="main__play__items">
-                    {elements.map((element, col) =>  elementImage(element, row, col))}
+                    {elements.map((element, col) =>  element.image !== '' && elementImage(element, row, col))}
                 </div>
             );
         }
@@ -47,6 +54,7 @@ class Play extends React.Component {
 }
 
 function mapStateToProps(state) {
+    // debugger;
     return {
         playProps: state.PikachuReducer,
     }
@@ -55,7 +63,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         getMapPikachu: () => dispatch(ActionsPikachu.getMapPikachu()),
-        clickElement: (element, row, col) => dispatch(ActionsPikachu.clickElement(element, row, col))
+        clickElement: (array, element, row, col) => dispatch(ActionsPikachu.clickElement(array, element, row, col)),
     }
 }
 
